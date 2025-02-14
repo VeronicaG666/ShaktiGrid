@@ -8,9 +8,13 @@ import random
 from datetime import datetime
 import numpy as np
 import pandas as pd
+import os
 import time
 
 model = None
+
+print("Current working directory:", os.getcwd())
+print("Files in current directory:", os.listdir(os.getcwd()))
 
 app = Flask(__name__)
 CORS(app)  # This allows requests from all origins by default
@@ -74,7 +78,7 @@ def predict():
     if model is None:
         return jsonify({"error": "Model not loaded."}), 500
     features = np.array([data_storage["temperature"], data_storage["wind"]]).reshape(1, -1)
-    
+
     # 1. Current date/time
     now = datetime.now()
     hour = now.hour
