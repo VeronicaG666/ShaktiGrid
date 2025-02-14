@@ -1,0 +1,7 @@
+Flask
+flask-cors
+APScheduler
+requests
+joblib
+numpy
+gunicorn
