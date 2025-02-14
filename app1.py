@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 import time
 
+model = None
+
 app = Flask(__name__)
 CORS(app)  # This allows requests from all origins by default
 
@@ -69,6 +71,10 @@ def home():
 # For simplicity, we'll assume your model expects two features: temperature and wind speed.
 @app.route('/predict', methods=['GET'])
 def predict():
+    if model is None:
+        return jsonify({"error": "Model not loaded."}), 500
+    features = np.array([data_storage["temperature"], data_storage["wind"]]).reshape(1, -1)
+    
     # 1. Current date/time
     now = datetime.now()
     hour = now.hour
