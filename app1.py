@@ -13,7 +13,6 @@ import time
 app = Flask(__name__)
 CORS(app)  # This allows requests from all origins by default
 
-model = None
 
 # Load the trained model (ensure solar_model.pkl is in the same directory)
 MODEL_PATH = "solar_model.pkl"
