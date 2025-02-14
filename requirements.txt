@@ -2,6 +2,7 @@ Flask
 flask-cors
 APScheduler
 requests
+pandas
 joblib
 numpy
 gunicorn
