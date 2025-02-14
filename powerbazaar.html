@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PowerBazaar - Coming Soon</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Additional styling for the coming soon page */
+        .coming-soon-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Set a min-height that leaves space for the navbar */
+            min-height: calc(100vh - 80px);
+            /* adjust 80px if your navbar is a different height */
+            flex-direction: column;
+            padding-top: 20px;
+        }
+
+        .coming-soon-container img {
+            max-width: 80%;
+            max-height: 400px;
+            /* Limit image height */
+            height: auto;
+            width: auto;
+        }
+
+        .coming-soon-container h2 {
+            margin-top: 20px;
+            font-size: 2rem;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar (reuse your existing navbar) -->
+    <nav id="mainNavbar">
+        <img src="brandlogoimg.png" alt="ShaktiGrid logo" id="logo">
+        <ul class="nav-links">
+            <li><a href="index.html">HOME</a></li>
+            <li><a href="powerbazaar.html">PowerBazaar</a></li>
+            <li><a href="contactus.html">Contact Us</a></li>
+        </ul>
+    </nav>
+
+    <!-- Coming Soon Section -->
+    <div class="coming-soon-container">
+        <img src="comingsoon.png" alt="Coming Soon">
+        <h2>Coming Soon</h2>
+    </div>
+</body>
+
+</html>
