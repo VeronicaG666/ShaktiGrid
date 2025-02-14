@@ -22,8 +22,10 @@ MODEL_PATH = "solar_model.pkl"
 try:
     model = joblib.load(MODEL_PATH)
     print("Model loaded successfully!")
+    print("DEBUG: model type:", type(model))
 except Exception as e:
     print(f"Error loading model: {e}")
+
 
 # Global dictionary to store automatically collected external data
 # For example, we collect temperature and wind speed from a weather API.
