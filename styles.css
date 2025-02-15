@@ -101,10 +101,10 @@ h1, p {
     color: #fff;
     padding: 10px 20px;
     border-radius: 5px;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Gabarito', serif;
     font-size: 1.1rem;
     opacity: 0;
-    animation: fadeInOut 3s forwards;
+    animation: fadeInOut 30s forwards;
     z-index: 9999;
 }
 

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Initialize the chart
+    // Initialize the Chart.js chart
     const ctx = document.getElementById("forecastChart").getContext("2d");
     let forecastChart = new Chart(ctx, {
         type: "line",
@@ -72,28 +72,66 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // Global variables to track the current toast and its message
+    let currentToast = null;
+    let currentMessage = "";
 
-    // 2. Function to display a toast message as a pop-up
     function showToast(message) {
-        const toast = document.createElement("div");
-        toast.className = "toast";
-        toast.innerText = message;
-        document.body.appendChild(toast);
-        // Remove the toast after 3 seconds
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
+        // If a toast already exists and the message is the same, do nothing.
+        if (currentToast && currentMessage === message) {
+            return;
+        }
+
+        // If a toast exists but the message has changed, remove the old toast.
+        if (currentToast) {
+            currentToast.remove();
+            currentToast = null;
+            currentMessage = "";
+        }
+
+        // Create a new toast element.
+        currentToast = document.createElement("div");
+        currentToast.className = "toast";
+        currentToast.innerText = message;
+        document.body.appendChild(currentToast);
+        currentMessage = message;
     }
 
-    // 3. Function to update the UI (DOM element and chart)
+
+    // Function to generate a practical optimization insight message based on input features and prediction.
+    function generateOptimizationInsight(inputObj, predictionValue) {
+        let message = "";
+        if (predictionValue > 50) {
+            message = "High solar output detected! Consider trading surplus energy to boost local rural infrastructure.";
+        } else if (predictionValue > 20) {
+            message = "Moderate solar output – it's an optimal time to charge batteries, ensuring stable energy for rural needs.";
+        } else {
+            message = "Low solar output forecast. Conserve energy now and prepare for improved conditions later.";
+        }
+        return message;
+    }
+
+    // Function to update the chart with new prediction data
+    function updateChart(newPrediction) {
+        const timeLabel = new Date().toLocaleTimeString();
+        forecastChart.data.labels.push(timeLabel);
+        forecastChart.data.datasets[0].data.push(newPrediction);
+        // Keep only the latest 20 data points
+        if (forecastChart.data.labels.length > 20) {
+            forecastChart.data.labels.shift();
+            forecastChart.data.datasets[0].data.shift();
+        }
+        forecastChart.update();
+    }
+
+    // Function to update UI elements with fetched data and display optimization insights
     function updateUI(fetchedData) {
-        // Assuming your response structure:
-        // { input_features: [ { hour: ..., day: ..., month: ..., year: ..., Consumption: ..., Wind: ... } ],
-        //   prediction: [someNumber] }
+        // Expected response structure: 
+        // { input_features: [ { hour, day, month, year, Consumption, Wind } ], prediction: [someNumber] }
         const inputObj = fetchedData.input_features[0];
         const predictionValue = fetchedData.prediction[0];
 
-        // Update a DOM element (if you have one) for detailed info
+        // Update detailed info text (ensure an element with id="data-info" exists)
         const dataInfoElem = document.getElementById("data-info");
         if (dataInfoElem) {
             dataInfoElem.textContent =
@@ -102,51 +140,29 @@ document.addEventListener("DOMContentLoaded", () => {
                 `Wind: ${inputObj.Wind.toFixed(2)}, Prediction: ${predictionValue.toFixed(2)}`;
         }
 
-        // Determine an engaging pointer message based on the current hour
-        let pointerMsg = "";
-        if (inputObj.hour < 19) {
-            pointerMsg = "Our forecast indicates robust solar output in the early hours—ensuring ample energy for rural operations and local development initiatives.";
-        } else {
-            pointerMsg = "Even as sunlight wanes after 7:00 PM, our predictive model supports smart energy storage strategies to benefit rural communities.";
-        }
-        // Show the message as a pop-up toast
-        showToast(pointerMsg);
+        // Generate and display the optimization insight message as a toast pop-up
+        const optimizationMsg = generateOptimizationInsight(inputObj, predictionValue);
+        showToast(optimizationMsg);
 
-        // Update the chart with the new prediction value
+        // Update the chart with the new prediction
         updateChart(predictionValue);
     }
 
-    // 4. Function to update the Chart.js chart with new data
-    function updateChart(newPrediction) {
-        const timeLabel = new Date().toLocaleTimeString();
-        forecastChart.data.labels.push(timeLabel);
-        forecastChart.data.datasets[0].data.push(newPrediction);
-
-        // Optionally, keep only the last 20 data points
-        if (forecastChart.data.labels.length > 20) {
-            forecastChart.data.labels.shift();
-            forecastChart.data.datasets[0].data.shift();
-        }
-        forecastChart.update();
-    }
-
-    // 5. Define the async function that fetches predictions from the Flask API
+    // Async function to fetch predictions from your Flask API
     async function getPrediction() {
         try {
-            const response = await fetch("http://127.0.0.1:5000/predict");
+            const response = await fetch("http://127.0.0.1:5000/predict");  // Update URL if needed
             const data = await response.json();
             console.log("Fetched data:", data);
-
-            // Update the UI (both DOM elements and chart) with the fetched data
             updateUI(data);
         } catch (error) {
             console.error("Error fetching prediction:", error);
         }
     }
 
-    // 6. Fetch a prediction when the page loads
+    // Initial fetch when page loads
     getPrediction();
-
-    // 7. Set an interval to fetch predictions every 2 seconds (2000 milliseconds)
-    setInterval(getPrediction, 2000);
+    // Fetch predictions every 30 seconds
+    setInterval(getPrediction, 30000);
 });
+

@@ -9,7 +9,17 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import os
+import math
 import time
+
+def simulate_consumption(hour):
+    # Base consumption and amplitude based on typical rural usage patterns.
+    base = 20.0       # Base consumption (units)
+    amplitude = 10.0  # Variation amplitude
+    # Peak consumption assumed around 8 AM (you can adjust this as needed)
+    phase = 2 * math.pi * (hour - 8) / 24
+    consumption = base + amplitude * math.sin(phase)
+    return consumption
 
 model = None
 
@@ -77,22 +87,22 @@ def home():
 def predict():
     if model is None:
         return jsonify({"error": "Model not loaded."}), 500
-    features = np.array([data_storage["temperature"], data_storage["wind"]]).reshape(1, -1)
 
-    # 1. Current date/time
+    # 1. Get current date/time features
     now = datetime.now()
     hour = now.hour
     day = now.day
     month = now.month
     year = now.year
 
-    # 2. Slightly randomize consumption to see changing outputs
-    default_consumption = random.uniform(15.0, 35.0)
+    # 2. Simulate consumption based on time of day (instead of using a random value)
+    default_consumption = simulate_consumption(hour)
 
-    # 3. Use the wind from your data_storage
+    # 3. Use the live wind value from data_storage
     wind_value = data_storage["wind"]
 
-    # 4. Construct the DataFrame with the exact columns your model was trained on
+    # 4. Construct the DataFrame with the exact columns your model was trained on:
+    #    ["hour", "day", "month", "year", "Consumption", "Wind"]
     df_features = pd.DataFrame([{
         "hour": hour,
         "day": day,
@@ -112,6 +122,7 @@ def predict():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
